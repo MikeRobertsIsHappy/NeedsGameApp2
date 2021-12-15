@@ -42,7 +42,7 @@ def get_bot_response():
 
 if __name__ == "__main__":
     now = datetime.now().strftime("%Y_%m_%d_%H_%M")
-    log_filename = 'jaques_logs/%s_log.txt' % now
+    log_filename = 'game_play_logs/%s_log.txt' % now
     logging.basicConfig(
         filename=log_filename,
         level=logging.INFO,

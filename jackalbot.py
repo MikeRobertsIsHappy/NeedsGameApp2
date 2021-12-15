@@ -206,8 +206,8 @@ def jackalbot_response (user_input):
 
     english_bot  = 1 #not used now
 
-    #    try: # throws an error at first if not a defined phase, so we can initialize some things
-    if user_input == "conversation_strategy":
+    
+    if user_input == "conversation_strategy":     # this allows to jump to the end of a section
         conversation_phase == 'strategy'
         bot_response = "System: conversation_phase == 'strategy' "
         return bot_response
