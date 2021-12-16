@@ -16,7 +16,7 @@
    virtualenv env  # for first time
    env\Scripts\activate.ps1
    pip install -r requirements.txt   OR    pip install --no-cache-dir -r requirements.txt    # for first time
-   python main.py
+   ython main.py
    http://127.0.0.1:8080/
    ```
 

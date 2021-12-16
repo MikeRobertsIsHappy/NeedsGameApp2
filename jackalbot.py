@@ -206,11 +206,6 @@ def jackalbot_response (user_input):
 
     english_bot  = 1 #not used now
 
-    
-    if user_input == "conversation_strategy":     # this allows to jump to the end of a section
-        conversation_phase == 'strategy'
-        bot_response = "System: conversation_phase == 'strategy' "
-        return bot_response
     if (user_input == "yy")  or (user_input == "start")   :
         # get the first file_in_personas_folder
         my_directory = r'personas/'
@@ -225,10 +220,10 @@ def jackalbot_response (user_input):
 
         bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
         logging.info('introduction:Start of session')
-        startup_info = {k: persona_data[k] for k in ("jackalbot_name", "jackalbot_created" , "jackalbot_updated",  "jackalbot_version",  "jackalbot_author",  "jackalbot_chatbot_name", "jackalbot_logic_adapters", "jackalbot_chatbot_database_uri",  "jackalbot_read_only", "jackalbot_preprocessors", "jackalbot_statement_comparison_function")}
+        startup_info = {k: persona_data[k] for k in ('jackalbot_name', 'jackalbot_created',  'jackalbot_updated', 'jackalbot_version', 'jackalbot_author', 'jackalbot_hosts', 'intro_prompt', 'jackalbot_score_to_move_to_next_stage', 'jackalbot_num_guess_then_offer_clue', 'jackalbot_num_guess_max_then_move_on')}
         logging.info('session info:%s' % startup_info)
         # Set global varribles
-        conversation_phase  = 'intro'
+        conversation_phase  = 'needs'
         past_show_scores = False
         total_score_dictionary = {} #initialize global varrible before giving it to a function
         total_score_dictionary["did_it_sound_like_nvc_pos"]         = 0.00
@@ -241,19 +236,19 @@ def jackalbot_response (user_input):
         total_score_dictionary["cleaned_input_response_score"]      = 0.00
 
         persona_data["show_scores"] = False
-        bot_response = "---------Start Session: Training --------- <br> <br>" + persona_data["intro_prompt"] 
+        bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
         return bot_response
 
-    if (user_input == "begin")    :  #tart the next session
+    if (user_input == "begin")  or (user_input == "b")    :  #tart the next session
         current_persona_number = current_persona_number + 1    #set to 0 to start at begining of list
         starting_persona_file = personas_in_directory_list[current_persona_number]
         persona_data = load_startup_persona_file(starting_persona_file)
         bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
         logging.info('introduction:Start of session')
-        startup_info = {k: persona_data[k] for k in ("jackalbot_name", "jackalbot_created" , "jackalbot_updated",  "jackalbot_version",  "jackalbot_author",  "jackalbot_chatbot_name", "jackalbot_logic_adapters", "jackalbot_chatbot_database_uri",  "jackalbot_read_only", "jackalbot_preprocessors", "jackalbot_statement_comparison_function")}
+        startup_info = {k: persona_data[k] for k in ('jackalbot_name', 'jackalbot_created',  'jackalbot_updated', 'jackalbot_version', 'jackalbot_author', 'jackalbot_hosts', 'intro_prompt', 'jackalbot_score_to_move_to_next_stage', 'jackalbot_num_guess_then_offer_clue', 'jackalbot_num_guess_max_then_move_on')}
         logging.info('session info:%s' % startup_info)
         # Set global varribles
-        conversation_phase  = 'intro'
+        conversation_phase  = 'needs'
         past_show_scores = False
         total_score_dictionary = {} #initialize global varrible before giving it to a function
         total_score_dictionary["did_it_sound_like_nvc_pos"]         = 0.00
@@ -266,7 +261,7 @@ def jackalbot_response (user_input):
         total_score_dictionary["cleaned_input_response_score"]      = 0.00
 
         persona_data["show_scores"] = False
-        bot_response = f"--------- Start Session: {str(current_persona_number).zfill(2)} --------- <br> <br>" + persona_data["intro_prompt"] 
+        bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
         return bot_response
 
     if (user_input != "yy")  or (user_input != "start") or (user_input == "begin"):
@@ -293,7 +288,7 @@ def jackalbot_response (user_input):
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input, conversation_phase, persona_data, english_bot)
             scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary )
             if response_score == 100: 
-                conversation_phase = 'strategy'  # Level achieved, move to next stage
+                conversation_phase = 'needs'    #strategy'  # stay in loop for needs in this case
         elif conversation_phase == 'strategy' :  #Strategy Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input,  conversation_phase, persona_data )
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input,  conversation_phase, persona_data, english_bot)
