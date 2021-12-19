@@ -143,7 +143,7 @@ def make_response(cleaned_user_input, user_input,  conversation_phase, persona_d
 
         response_score = 0
 
-    return bot_host + ": "+bot_response, bot_status, response_score
+    return bot_host + "  "+bot_response, bot_status, response_score
 
 def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary  ):
     cleaned_user_input = TextBlob(str(cleaned_user_input))
