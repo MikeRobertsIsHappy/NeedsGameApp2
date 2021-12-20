@@ -5,7 +5,7 @@
     "jackalbot_version" : "1",
     "jackalbot_author" : "Mike Roberts",
     "jackalbot_hosts" : ["",""],
-    "intro_prompt" : "I&#39;m really upset you don’t want to be with me tonight.",
+    "intro_prompt" : "I&#39;m really upset you don&#39;t want to be with me tonight.",
     "jackalbot_score_to_move_to_next_stage" : 100,
     "jackalbot_num_guess_then_offer_clue" : 3,
     "jackalbot_num_guess_max_then_move_on" : 5,

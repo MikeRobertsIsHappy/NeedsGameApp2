@@ -25,11 +25,10 @@
 
 ## Optional Deploying to Google
 
-Some samples in this repositories may have special deployment instructions. Refer to the readme in the sample directory.
-
 1. Use the [Google Developers Console](https://console.developer.google.com)  to create a project/app id. (App id and project id are identical)
 
-2. Setup the gcloud tool, if you haven't already. Then use gcloud to deploy your app
+2.  Watch this https://www.youtube.com/watch?v=F7R8dEin6ZY
+    Setup the gcloud tool, if you haven't already. Then use gcloud to deploy your app
    ```
    gcloud init
    gcloud app deploy
@@ -38,5 +37,5 @@ Some samples in this repositories may have special deployment instructions. Refe
    
 ## Should look like this
    
-![image](https://user-images.githubusercontent.com/24612642/127243533-01abc988-21ac-4437-9cbe-62f4389f7090.png)
+![image](static\images\image8.png)
    

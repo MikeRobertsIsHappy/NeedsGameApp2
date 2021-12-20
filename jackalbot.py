@@ -27,16 +27,41 @@ def load_startup_persona_file(startup_file):
         persona_data = json.load(f) 
     return(persona_data)
 
+def load_next_persona(persona_data):
+    starting_persona_file = personas_in_directory_list[current_persona_number]
+    persona_data = load_startup_persona_file(starting_persona_file)
+    bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
+    logging.info('introduction:Start of session')
+    startup_info = {k: persona_data[k] for k in ('jackalbot_name', 'jackalbot_created',  'jackalbot_updated', 'jackalbot_version', 'jackalbot_author', 'jackalbot_hosts', 'intro_prompt', 'jackalbot_score_to_move_to_next_stage', 'jackalbot_num_guess_then_offer_clue', 'jackalbot_num_guess_max_then_move_on')}
+    logging.info('session info:%s' % startup_info)
+    # Set global varribles
+    conversation_phase  = 'needs'
+    past_show_scores = False
+    total_score_dictionary = {} #initialize global varrible before giving it to a function
+    total_score_dictionary["did_it_sound_like_nvc_pos"]         = 0.00
+    total_score_dictionary["input_polarity"]                    = 0.00
+    total_score_dictionary["input_subjectivity"]                = 0.00
+    total_score_dictionary["input_response_score"]              = 0.00
+    total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] = 0.00
+    total_score_dictionary["cleaned_input_polarity"]            = 0.00
+    total_score_dictionary["cleaned_input_subjectivity"]        = 0.00
+    total_score_dictionary["cleaned_input_response_score"]      = 0.00
+    persona_data["show_scores"] = False
+    bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
+    return bot_response
+
+
 
 def look_for_keyword(user_input, persona_data):
     #check for NVC help
     response = ""
     user_input = ' '.join(user_input)  # to convert from list to string
-    if user_input == 'nvc help' : response = "Type nvc_feelings or nvc_needs to see the list." #
-    if user_input == 'nvc' : response = "Type nvc_feelings or nvc_needs to see the list." #
-    if user_input == 'nvc feelings' : response =  persona_data["feelings_list"]
+    if user_input == 'nvc help' : response = "Type &#39;nvc needs&#39; to see the list." #
+    if user_input == 'nvc' : response = "Type &#39;nvc_needs&#39; to see the list." #
+    #if user_input == 'nvc feelings' : response =  persona_data["feelings_list"]
     if user_input == 'nvc needs' : response =  persona_data["needs_list"] 
-    if user_input == 'nvc end' : response =  "This feature is not ready yet"   # exit() 
+    #if user_input == 'nvc end' : response =  "This feature is not ready yet"   # exit() 
+    if user_input == 'nvc clue' : response =  persona_data["needs_clue"] 
     if user_input == 'nvc scores' : 
         persona_data["show_scores"] = not persona_data["show_scores"]
         response =  f'Show scores set to {persona_data["show_scores"]}'
@@ -240,29 +265,17 @@ def jackalbot_response (user_input):
         return bot_response
 
     if (user_input == "begin")  or (user_input == "b")    :  #tart the next session
-        current_persona_number = current_persona_number + 1    #set to 0 to start at begining of list
-        starting_persona_file = personas_in_directory_list[current_persona_number]
-        persona_data = load_startup_persona_file(starting_persona_file)
-        bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
-        logging.info('introduction:Start of session')
-        startup_info = {k: persona_data[k] for k in ('jackalbot_name', 'jackalbot_created',  'jackalbot_updated', 'jackalbot_version', 'jackalbot_author', 'jackalbot_hosts', 'intro_prompt', 'jackalbot_score_to_move_to_next_stage', 'jackalbot_num_guess_then_offer_clue', 'jackalbot_num_guess_max_then_move_on')}
-        logging.info('session info:%s' % startup_info)
-        # Set global varribles
-        conversation_phase  = 'needs'
-        past_show_scores = False
-        total_score_dictionary = {} #initialize global varrible before giving it to a function
-        total_score_dictionary["did_it_sound_like_nvc_pos"]         = 0.00
-        total_score_dictionary["input_polarity"]                    = 0.00
-        total_score_dictionary["input_subjectivity"]                = 0.00
-        total_score_dictionary["input_response_score"]              = 0.00
-        total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] = 0.00
-        total_score_dictionary["cleaned_input_polarity"]            = 0.00
-        total_score_dictionary["cleaned_input_subjectivity"]        = 0.00
-        total_score_dictionary["cleaned_input_response_score"]      = 0.00
-
-        persona_data["show_scores"] = False
-        bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
-        return bot_response
+        try :
+            current_persona_number = current_persona_number + 1    #set to 0 to start at begining of list
+        except :
+            bot_response = f"-------------------Enter &#39;start&#39; to play.-------------------"
+            return bot_response
+        
+        if current_persona_number > len(personas_in_directory_list) :
+            bot_response = f"------------------------------------- <br>"  +"This is the end of the session.  Enter &#39;start&#39; to play again."
+            return bot_response
+        else :
+            load_next_persona(persona_data)
 
     if (user_input != "yy")  or (user_input != "start") or (user_input == "begin"):
         try:
