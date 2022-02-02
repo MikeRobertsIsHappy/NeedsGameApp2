@@ -5,6 +5,7 @@ import twily_classifier as cl
 #import stop_words as stopwords
 import json
 from pathlib import Path
+import os.path
 import pathlib
 import random
 #import pandas as pd
@@ -18,11 +19,18 @@ pos_distribution = []
 user_input_polarity = 0
 user_input_subjectivity = 0
 
+
+
+
+
+
 #This will load the persona script
 def load_startup_persona_file(startup_file):
     my_directory = pathlib.Path().absolute()
-    my_directory = str(my_directory) + "\\personas\\"
-    startup_file = my_directory + startup_file
+    #my_directory = str(my_directory) + "\\personas\\"
+    my_directory = os.path.join(str(my_directory), "personas")
+    #startup_file = my_directory + startup_file
+    startup_file = os.path.join(my_directory, startup_file)
     with open(startup_file, 'r') as f:
         persona_data = json.load(f) 
     return(persona_data)

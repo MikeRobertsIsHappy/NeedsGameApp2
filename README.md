@@ -32,7 +32,10 @@ enable the appilcation here https://console.cloud.google.com/appengine/settings?
 2.  Watch this https://www.youtube.com/watch?v=F7R8dEin6ZY
     Setup the gcloud tool, if you haven't already. Then use gcloud to deploy your app
    ```
+
+   git clone https://github.com/MikeRobertsIsHappy/NeedsGameApp.git
    gcloud init
+     go to the directory
    gcloud app deploy
    ```
 3. Your application is now live at `your-app-id.appspot.com`<br>
