@@ -34,11 +34,14 @@ enable the appilcation here https://console.cloud.google.com/appengine/settings?
    ```
 
    git clone https://github.com/MikeRobertsIsHappy/NeedsGameApp.git
-   gcloud init
+   gcloud init  (optional)
+   g
      go to the directory
    gcloud app deploy
+
+   cloud app logs tail -s default (optional)
    ```
-3. Your application is now live at `your-app-id.appspot.com`<br>
+3. Your application is now live 
    
 ## Should look like this
    
