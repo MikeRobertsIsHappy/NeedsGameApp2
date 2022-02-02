@@ -8,6 +8,8 @@ from pathlib import Path
 import os.path
 import pathlib
 import random
+import nltk
+nltk.download('punkt')
 #import pandas as pd
 #from chatterbot import ChatBot
 #from chatterbot.trainers import ChatterBotCorpusTrainer
