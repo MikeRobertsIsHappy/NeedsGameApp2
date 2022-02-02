@@ -275,7 +275,7 @@ def jackalbot_response (user_input):
             bot_response = f"------------------------------------- <br>"  +"This is the end of the session.  Enter &#39;start&#39; to play again."
             return bot_response
         else :
-            load_next_persona(persona_data)
+            return load_next_persona(persona_data)
 
     if (user_input != "yy")  or (user_input != "start") or (user_input == "begin"):
         try:
