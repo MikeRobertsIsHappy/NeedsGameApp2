@@ -14,15 +14,19 @@
 
 # [START gae_flex_quickstart]
 import logging
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import jackalbot as jb
 from datetime import datetime
+#from flask_session import Session
 
 app = Flask(__name__)
+app.secret_key = "myTestKey"
+
 
 
 @app.route("/")
 def home():
+    session['persona_session'] = 1
     return render_template("index.html")
 
 
@@ -37,7 +41,7 @@ def server_error(e):
 @app.route("/get")
 def get_bot_response():
     user_input = request.args.get('msg')
-    bot_response = jb.jackalbot_response(user_input)
+    bot_response = jb.jackalbot_response(user_input, session['persona_session'] )
     return bot_response
 
 if __name__ == "__main__":

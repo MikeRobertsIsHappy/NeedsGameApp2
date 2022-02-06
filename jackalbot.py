@@ -22,17 +22,14 @@ user_input_subjectivity = 0
 
 
 
-
-
 #This will load the persona script
 def load_startup_persona_file(startup_file):
     my_directory = pathlib.Path().absolute()
-
     my_directory = os.path.join(str(my_directory), "personas")
-    
     startup_file = os.path.join(my_directory, startup_file)
     with open(startup_file, 'r') as f:
         persona_data = json.load(f) 
+        session_data = persona_data
     return(persona_data)
 
 def load_next_persona(persona_data):
@@ -133,7 +130,6 @@ def get_response_from_user_and_clean(user_input, conversation_phase, persona_dat
     # lematize - not yet
       
     return cleaned_user_input
-     # 
 
 def make_response(cleaned_user_input, user_input,  conversation_phase, persona_data, english_bot):
     # if look_for_keyword
@@ -222,11 +218,11 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
 
 
 
-def jackalbot_response (user_input):
+def jackalbot_response (user_input, session_data):
     global conversation_phase
     global persona_data
     global bot_host
-    global english_bot # the general respnse bot
+    global english_bot # Not used at this time 
     global past_show_scores
     global total_score_dictionary
     global personas_in_directory_list

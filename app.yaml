@@ -26,7 +26,7 @@ runtime_config:
 
 
 manual_scaling:
-  instances: 4
+  instances: 1
   # max_concurrent_requests: 1
 resources:
   cpu: 1
