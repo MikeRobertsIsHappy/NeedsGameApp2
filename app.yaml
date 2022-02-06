@@ -23,18 +23,19 @@ runtime_config:
 # The settings below are to reduce costs during testing and are not appropriate
 # for production use. For more information, see:
 # https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml
-#manual_scaling:
-#  instances: 4
-#  max_concurrent_requests: 4
-#resources:
-#  cpu: 2
-#  memory_gb: 1.4
-#  disk_size_gb: 10
-
 manual_scaling:
-  instances: 1
+  instances: 4
   max_concurrent_requests: 1
+  max_pending_latency: automatic
 resources:
   cpu: 1
   memory_gb: 0.5
   disk_size_gb: 10
+
+#manual_scaling:
+#  instances: 1
+#  max_concurrent_requests: 1
+#resources:
+#  cpu: 1
+#  memory_gb: 0.5
+#  disk_size_gb: 10
