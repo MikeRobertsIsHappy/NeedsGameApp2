@@ -10,9 +10,7 @@ import pathlib
 import random
 import nltk
 nltk.download('punkt')
-#import pandas as pd
-#from chatterbot import ChatBot
-#from chatterbot.trainers import ChatterBotCorpusTrainer
+
 
 bot_host =str()
 #STOP_WORDS = stopwords.sw_list
@@ -29,9 +27,9 @@ user_input_subjectivity = 0
 #This will load the persona script
 def load_startup_persona_file(startup_file):
     my_directory = pathlib.Path().absolute()
-    #my_directory = str(my_directory) + "\\personas\\"
+
     my_directory = os.path.join(str(my_directory), "personas")
-    #startup_file = my_directory + startup_file
+    
     startup_file = os.path.join(my_directory, startup_file)
     with open(startup_file, 'r') as f:
         persona_data = json.load(f) 
@@ -58,9 +56,7 @@ def load_next_persona(persona_data):
     total_score_dictionary["cleaned_input_response_score"]      = 0.00
     persona_data["show_scores"] = False
     bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
-    return bot_response
-
-
+    return bot_response, persona_data
 
 def look_for_keyword(user_input, persona_data):
     #check for NVC help
@@ -226,9 +222,6 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
 
 
 
-
-
-
 def jackalbot_response (user_input):
     global conversation_phase
     global persona_data
@@ -241,12 +234,15 @@ def jackalbot_response (user_input):
 
     english_bot  = 1 #not used now
 
-    if (user_input == "yy")  or (user_input == "start")   :
+    if user_input in ["yy", "start", "Yy", "Start"]   :    #startmg a new game
         # get the first file_in_personas_folder
-        my_directory = r'personas/'
+        #my_directory = r'personas/'
+        #entries = Path(my_directory) #get sorted list of file items
+        
+        app_dir_path = pathlib.Path().absolute()  # get app path
+        my_directory = os.path.join(str(app_dir_path), "personas")   # add persona to it
         entries = Path(my_directory) #get sorted list of file items
         personas_in_directory_list = []
-        #persona_data_file = entries[0] 
         for entry in entries.iterdir():
             personas_in_directory_list.append(entry.name)  # put the nemes in a list
         current_persona_number = 0    #set to 0 to start at begining of list
@@ -271,23 +267,27 @@ def jackalbot_response (user_input):
         total_score_dictionary["cleaned_input_response_score"]      = 0.00
 
         persona_data["show_scores"] = False
-        bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
+        bot_response = f"---------STARTING  NEW SESSION ------------------- <br><br>"  + persona_data["intro_prompt"] 
         return bot_response
 
-    if (user_input == "begin")  or (user_input == "b")    :  #tart the next session
+    if user_input in ["begin", "b"]    :  #tart the next session
+        
         try :
-            current_persona_number = current_persona_number + 1    #set to 0 to start at begining of list
+            current_persona_number = current_persona_number + 1    #set to 1 to start at begining of list
         except :
             bot_response = f"-------------------Enter &#39;start&#39; to play.-------------------"
             return bot_response
         
-        if current_persona_number > len(personas_in_directory_list) :
+        if current_persona_number == len(personas_in_directory_list) :  #if on last item
             bot_response = f"------------------------------------- <br>"  +"This is the end of the session.  Enter &#39;start&#39; to play again."
             return bot_response
         else :
-            return load_next_persona(persona_data)
+            bot_response, persona_data = load_next_persona(persona_data) 
+            return bot_response
 
-    if (user_input != "yy")  or (user_input != "start") or (user_input == "begin"):
+
+
+    if  user_input not in ["begin", "b", "B", "Begin", "yy", "start", "Yy", "Start"]  : #if a normal statement
         try:
             if conversation_phase == 'test'  :  #intro Phase
                 x=2 # should throw an error on the first time that is caught by the except block
@@ -328,7 +328,7 @@ def jackalbot_response (user_input):
             past_show_scores = True        
         elif persona_data["show_scores"] == False : 
             bot_response = bot_response 
-    return bot_response 
+        return bot_response 
 
 
 
