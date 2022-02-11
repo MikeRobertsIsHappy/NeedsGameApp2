@@ -296,7 +296,7 @@ def jackalbot_response (user_input):
         create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
         return bot_response
 
-    if user_input in ["begin", "b"]    :  #tart the next session
+    if user_input in ["begin", "b"]    :  #start the next session
         
         #load values from game_state_dictionary
         personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (game_state_dictionary)
@@ -316,8 +316,6 @@ def jackalbot_response (user_input):
             #save game state
         create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
         return bot_response
-
-
 
     if  user_input not in ["begin", "b", "B", "Begin", "yy", "start", "Yy", "Start"]  : #if a normal statement
 
@@ -368,5 +366,3 @@ def jackalbot_response (user_input):
         #save game state
         create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
         return bot_response
-
-
