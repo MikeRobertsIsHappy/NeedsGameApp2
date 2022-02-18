@@ -46,7 +46,7 @@ from the cloud terminal
 3. Your application is now live 
    
 ## Should look like this
-   
-![image](/static/images/image8.png
+
+![image8](https://user-images.githubusercontent.com/24612642/154763236-6d3efec4-cc12-4bf7-8063-6f38216b11bd.png)
 
 To see an example terminal text. please view the file README_gcloud.md in this repository.
