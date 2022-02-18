@@ -17,10 +17,15 @@ import logging
 from flask import Flask, render_template, request, session
 import jackalbot as jb
 from datetime import datetime
+from pathlib import Path
+import pathlib
+import os.path
 #from flask_session import Session
 
 app = Flask(__name__)
 app.secret_key = "myTestKey"
+
+
 
 
 
@@ -41,15 +46,20 @@ def server_error(e):
 @app.route("/get")
 def get_bot_response():
     user_input = request.args.get('msg')
-    bot_response = jb.jackalbot_response(user_input, session['persona_session'] )
+    bot_response = jb.jackalbot_response(user_input)
+
     return bot_response
 
 if __name__ == "__main__":
     now = datetime.now().strftime("%Y_%m_%d_%H_%M")
-    log_filename = 'game_play_logs/%s_log.txt' % now
+    app_directory = pathlib.Path().absolute()
+    app_directory = os.path.join(str(app_directory), "game_play_logs")
+    log_filename = '%s_log.txt' % now
+    log_file_path = os.path.join(app_directory, log_filename)
+
     logging.basicConfig(
-        filename=log_filename,
+        filename=log_file_path,
         level=logging.INFO,
         format='%(asctime)s.%(msecs)d %(levelname)-8s %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S')
-    app.run(host='127.0.0.1', port=8080, threaded=True)
+    app.run(host='127.0.0.1', port=8080, threaded=True)  
