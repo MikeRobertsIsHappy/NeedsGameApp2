@@ -20,8 +20,6 @@ user_input_polarity = 0
 user_input_subjectivity = 0
 
 
-
-
 #This will load the persona script
 def load_startup_persona_file(startup_file):
     my_directory = pathlib.Path().absolute()
@@ -29,10 +27,9 @@ def load_startup_persona_file(startup_file):
     startup_file = os.path.join(my_directory, startup_file)
     with open(startup_file, 'r') as f:
         persona_data = json.load(f) 
-        session_data = persona_data
     return(persona_data)
 
-def load_next_persona(persona_data):
+def load_next_persona(persona_data, personas_in_directory_list,	current_persona_number):
     starting_persona_file = personas_in_directory_list[current_persona_number]
     persona_data = load_startup_persona_file(starting_persona_file)
     bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
@@ -172,7 +169,7 @@ def make_response(cleaned_user_input, user_input,  conversation_phase, persona_d
 
     return bot_host + "  "+bot_response, bot_status, response_score
 
-def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary  ):
+def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary):
     cleaned_user_input = TextBlob(str(cleaned_user_input))
     user_input = TextBlob(str(user_input))
     logging.info('user_input: %s' % str(user_input))
@@ -189,10 +186,10 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
     logging.info(
         'user_input_response_scores: %s' % user_input_response_scores)
 
-    total_score_dictionary["did_it_sound_like_nvc_pos"] = total_score_dictionary["did_it_sound_like_nvc_pos"] + sound_like_nvc_pos
-    total_score_dictionary["input_polarity"]        = total_score_dictionary["cleaned_input_polarity"]         + user_input.polarity
-    total_score_dictionary["input_subjectivity"]    = total_score_dictionary["cleaned_input_subjectivity"]    + user_input.subjectivity
-    total_score_dictionary["input_response_score"]  = total_score_dictionary["cleaned_input_response_score"]  + response_score
+    #total_score_dictionary["did_it_sound_like_nvc_pos"] = total_score_dictionary["did_it_sound_like_nvc_pos"] + sound_like_nvc_pos
+    #total_score_dictionary["input_polarity"]        = total_score_dictionary["cleaned_input_polarity"]         + user_input.polarity
+    #total_score_dictionary["input_subjectivity"]    = total_score_dictionary["cleaned_input_subjectivity"]    + user_input.subjectivity
+    #total_score_dictionary["input_response_score"]  = total_score_dictionary["cleaned_input_response_score"]  + response_score
 
 
     #This function will only return the scores for the cleaned_user_input
@@ -207,28 +204,57 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
     logging.info(
         'cleaned_user_input_response_scores: %s' % cleaned_user_input_response_scores)
 
-    total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] = total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] + cleaned_sound_like_nvc_pos
-    total_score_dictionary["cleaned_input_polarity"]        = total_score_dictionary["cleaned_input_polarity"]         + cleaned_user_input.polarity
-    total_score_dictionary["cleaned_input_subjectivity"]    = total_score_dictionary["cleaned_input_subjectivity"]    + cleaned_user_input.subjectivity
-    total_score_dictionary["cleaned_input_response_score"]  = total_score_dictionary["cleaned_input_response_score"]  + response_score
-
-
+    #total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] = total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] + cleaned_sound_like_nvc_pos
+    #total_score_dictionary["cleaned_input_polarity"]        = total_score_dictionary["cleaned_input_polarity"]         + cleaned_user_input.polarity
+    #total_score_dictionary["cleaned_input_subjectivity"]    = total_score_dictionary["cleaned_input_subjectivity"]    + cleaned_user_input.subjectivity
+    #total_score_dictionary["cleaned_input_response_score"]  = total_score_dictionary["cleaned_input_response_score"]  + response_score
 
     return cleaned_user_input_response_scores, total_score_dictionary  #this only sends the cleaned vers
 
+def create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary) :
+    game_state_dictionary['personas_in_directory_list'] = personas_in_directory_list
+    game_state_dictionary['current_persona_number'] = current_persona_number
+    game_state_dictionary['conversation_phase'] = conversation_phase
+    game_state_dictionary['past_show_scores'] = past_show_scores
+    game_state_dictionary['bot_host'] = bot_host
+    game_state_dictionary['persona_data'] = persona_data
+
+    # save file
+    session_directory = pathlib.Path().absolute()
+    session_directory = os.path.join(str(session_directory), "session")
+    file_name = 'session.json'    
+    session_file_path = os.path.join(session_directory, file_name)
+    with open(session_file_path, 'w') as f:
+        json.dump(game_state_dictionary, f)
+
+    return 
+    
+def read_game_state_dictionary_into_varribles (game_state_dictionary):
+
+    # save file
+    session_directory = pathlib.Path().absolute()
+    session_directory = os.path.join(str(session_directory), "session")
+    file_name = 'session.json'    
+    session_file_path = os.path.join(session_directory, file_name)
+    with open(session_file_path, 'r') as f:
+        game_state_dictionary = json.load(f) 
+
+    personas_in_directory_list = game_state_dictionary['personas_in_directory_list']
+    current_persona_number = game_state_dictionary['current_persona_number']
+    conversation_phase = game_state_dictionary['conversation_phase']
+    past_show_scores =game_state_dictionary['past_show_scores']
+    bot_host = game_state_dictionary['bot_host']
+    persona_data   = game_state_dictionary['persona_data']    
+    return personas_in_directory_list,	current_persona_number, conversation_phase, past_show_scores, bot_host, persona_data 
 
 
-def jackalbot_response (user_input, session_data):
-    global conversation_phase
-    global persona_data
-    global bot_host
+
+
+def jackalbot_response (user_input):
     global english_bot # Not used at this time 
-    global past_show_scores
-    global total_score_dictionary
-    global personas_in_directory_list
-    global current_persona_number # this is to track which persona we are on, in the list.
-
-    english_bot  = 1 #not used now
+    english_bot  = 1 # not used now
+    global game_state_dictionary
+    game_state_dictionary={} # initialize
 
     if user_input in ["yy", "start", "Yy", "Start"]   :    #startmg a new game
         # get the first file_in_personas_folder
@@ -264,10 +290,17 @@ def jackalbot_response (user_input, session_data):
 
         persona_data["show_scores"] = False
         bot_response = f"---------STARTING  NEW SESSION ------------------- <br><br>"  + persona_data["intro_prompt"] 
+
+        #save game state
+        
+        create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
         return bot_response
 
-    if user_input in ["begin", "b"]    :  #tart the next session
+    if user_input in ["begin", "b"]    :  #start the next session
         
+        #load values from game_state_dictionary
+        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (game_state_dictionary)
+
         try :
             current_persona_number = current_persona_number + 1    #set to 1 to start at begining of list
         except :
@@ -278,12 +311,17 @@ def jackalbot_response (user_input, session_data):
             bot_response = f"------------------------------------- <br>"  +"This is the end of the session.  Enter &#39;start&#39; to play again."
             return bot_response
         else :
-            bot_response, persona_data = load_next_persona(persona_data) 
-            return bot_response
+            bot_response, persona_data = load_next_persona(persona_data, personas_in_directory_list, current_persona_number) 
 
-
+            #save game state
+        create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
+        return bot_response
 
     if  user_input not in ["begin", "b", "B", "Begin", "yy", "start", "Yy", "Start"]  : #if a normal statement
+
+        #load values from game_state_dictionary
+        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (game_state_dictionary)
+        total_score_dictionary = {}
         try:
             if conversation_phase == 'test'  :  #intro Phase
                 x=2 # should throw an error on the first time that is caught by the except block
@@ -324,20 +362,7 @@ def jackalbot_response (user_input, session_data):
             past_show_scores = True        
         elif persona_data["show_scores"] == False : 
             bot_response = bot_response 
-        return bot_response 
 
-
-
-
-
-if __name__ == '__main__':
-    #print(get_list_of('introtext.txt')) # set introduction
-    print(bot_host +'Jacques: Hello')
-    while True:
-        try:
-            user_input = input('You  : ')    # This is the start of user input
-            bot_response = jackalbot2_response(user_input) # get response
-            print( bot_response)
-
-        except (KeyboardInterrupt, EOFError, SystemExit):
-            break
+        #save game state
+        create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
+        return bot_response
