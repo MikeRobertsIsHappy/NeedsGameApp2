@@ -218,27 +218,9 @@ def create_game_state_dictionary (personas_in_directory_list, current_persona_nu
     game_state_dictionary['past_show_scores'] = past_show_scores
     game_state_dictionary['bot_host'] = bot_host
     game_state_dictionary['persona_data'] = persona_data
-
-    # save file
-    session_directory = pathlib.Path().absolute()
-    session_directory = os.path.join(str(session_directory), "session")
-    file_name = 'session.json'    
-    session_file_path = os.path.join(session_directory, file_name)
-    with open(session_file_path, 'w') as f:
-        json.dump(game_state_dictionary, f)
-
-    return 
+    return game_state_dictionary
     
 def read_game_state_dictionary_into_varribles (game_state_dictionary):
-
-    # save file
-    session_directory = pathlib.Path().absolute()
-    session_directory = os.path.join(str(session_directory), "session")
-    file_name = 'session.json'    
-    session_file_path = os.path.join(session_directory, file_name)
-    with open(session_file_path, 'r') as f:
-        game_state_dictionary = json.load(f) 
-
     personas_in_directory_list = game_state_dictionary['personas_in_directory_list']
     current_persona_number = game_state_dictionary['current_persona_number']
     conversation_phase = game_state_dictionary['conversation_phase']
@@ -250,17 +232,13 @@ def read_game_state_dictionary_into_varribles (game_state_dictionary):
 
 
 
-def jackalbot_response (user_input):
+def jackalbot_response (user_input, session_data):
     global english_bot # Not used at this time 
     english_bot  = 1 # not used now
     global game_state_dictionary
     game_state_dictionary={} # initialize
 
     if user_input in ["yy", "start", "Yy", "Start"]   :    #startmg a new game
-        # get the first file_in_personas_folder
-        #my_directory = r'personas/'
-        #entries = Path(my_directory) #get sorted list of file items
-        
         app_dir_path = pathlib.Path().absolute()  # get app path
         my_directory = os.path.join(str(app_dir_path), "personas")   # add persona to it
         entries = Path(my_directory) #get sorted list of file items
@@ -292,14 +270,18 @@ def jackalbot_response (user_input):
         bot_response = f"---------STARTING  NEW SESSION ------------------- <br><br>"  + persona_data["intro_prompt"] 
 
         #save game state
-        
-        create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
-        return bot_response
+        #temp_game_state_dictionary =  create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
+        #string_temp_game_state_dictionary =  json.dumps(temp_game_state_dictionary)  
+        #session_data['game_state_data'] = string_temp_game_state_dictionary
+ 
+        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
 
-    if user_input in ["begin", "b"]    :  #start the next session
+        return bot_response, session_data['game_state_data']
+
+    elif user_input in ["begin", "b"]    :  #start the next session
         
         #load values from game_state_dictionary
-        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (game_state_dictionary)
+        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
 
         try :
             current_persona_number = current_persona_number + 1    #set to 1 to start at begining of list
@@ -314,13 +296,13 @@ def jackalbot_response (user_input):
             bot_response, persona_data = load_next_persona(persona_data, personas_in_directory_list, current_persona_number) 
 
             #save game state
-        create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
-        return bot_response
+        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
 
-    if  user_input not in ["begin", "b", "B", "Begin", "yy", "start", "Yy", "Start"]  : #if a normal statement
+        return bot_response, session_data['game_state_data']
 
+    else : #if a normal statement
         #load values from game_state_dictionary
-        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (game_state_dictionary)
+        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
         total_score_dictionary = {}
         try:
             if conversation_phase == 'test'  :  #intro Phase
@@ -364,5 +346,6 @@ def jackalbot_response (user_input):
             bot_response = bot_response 
 
         #save game state
-        create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
-        return bot_response
+        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
+
+        return bot_response, session_data['game_state_data']
