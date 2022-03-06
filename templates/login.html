@@ -1,10 +1,24 @@
-{% extends "base.html" %}
-{% block title %}Login Page{% endblock %}
 
-{% block content %}
-<form action="#" method="post">
-	<p>Name:</p>
-	<p><input type="text" name="nm" /></p>
-	<p><input type="submit" value="submit"/></p>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div><img src="/static/images/jackals.jpg" alt="jaquelbot image" style="width:40px;height:25px;">
+    <div>  &nbsp;&nbsp;&nbsp;<b>The Needs Game</b>
+    <div>
+      <div id="chatbox">
+        <p class="botText"style="text-align:center"><span>The Needs Game is a tool to help you practice the skill of identifying a person's needs. </a><br><br><b> First enter your name and press submit </b></span></p>  
+      </div>
+      <div id="userInput">
+		    <form action="#" method="post">
+			    <p> Your Name: <input type="text" name="nm" /></p>
+			    <p><input type="submit" value="submit"/></p>
+	    	</form>
+      </div>
+
+    </div>
+  </body>
+</html>
