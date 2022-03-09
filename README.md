@@ -1,5 +1,10 @@
 
 
+## Information about the bigger project
+
+See 'admin_documents' folder for general information about the project. The Microsoft Word documents can be opend in google docs, if needed. The 'COP-Partnerhip document talks about how you can contribute to this project. the 'admin_planning' folder has planning documents such as new planned features.
+
+
 ## Run Locally
 
 1. Clone this repo.
@@ -13,7 +18,7 @@
    -----PC based instructions -------
    cd <to the directroy>
    virtualenv env  # for first time
-   env\Scripts\activate.ps1  # to start the virtual environment
+   env\Scripts\activate.ps1  # to start the virtual environment for Windows(env\Scripts\activate.sh for others)) 
    pip install -r requirements.txt   OR    pip install --no-cache-dir -r requirements.txt    # for first time
    python main.py
    http://127.0.0.1:8080/

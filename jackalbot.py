@@ -233,8 +233,8 @@ def read_game_state_dictionary_into_varribles (game_state_dictionary):
 
 
 def jackalbot_response (user_input, session_data):
-    global english_bot # Not used at this time 
-    english_bot  = 1 # not used now
+    global english_bot # Not used at this time. it is an example of using an external chatbot for repsonses 
+    english_bot  = 1 # not used now - leave in as guidance for adding other chatobt solutions
     global game_state_dictionary
     game_state_dictionary={} # initialize
 
@@ -252,7 +252,9 @@ def jackalbot_response (user_input, session_data):
         bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
         logging.info('introduction:Start of session')
         startup_info = {k: persona_data[k] for k in ('jackalbot_name', 'jackalbot_created',  'jackalbot_updated', 'jackalbot_version', 'jackalbot_author', 'jackalbot_hosts', 'intro_prompt', 'jackalbot_score_to_move_to_next_stage', 'jackalbot_num_guess_then_offer_clue', 'jackalbot_num_guess_max_then_move_on')}
-        logging.info('session info:%s' % startup_info)
+        logging.info('session info:%s' % startup_info) # send initiazation data to log
+        user_info = session_data['user']   
+        logging.info('user info:%s' % user_info)  #send user's name to log
         # Set global varribles
         conversation_phase  = 'needs'
         past_show_scores = False
@@ -285,13 +287,13 @@ def jackalbot_response (user_input, session_data):
 
         try :
             current_persona_number = current_persona_number + 1    #set to 1 to start at begining of list
-        except :
+        except : # direct user to type start if they get off track at begining
             bot_response = f"-------------------Enter &#39;start&#39; to play.-------------------"
-            return bot_response
+            return bot_response, session_data['game_state_data']
         
-        if current_persona_number == len(personas_in_directory_list) :  #if on last item
+        if (current_persona_number == len(personas_in_directory_list)) or (current_persona_number > len(personas_in_directory_list))  :  #if on last secnario in the list
             bot_response = f"------------------------------------- <br>"  +"This is the end of the session.  Enter &#39;start&#39; to play again."
-            return bot_response
+            return bot_response, session_data['game_state_data']
         else :
             bot_response, persona_data = load_next_persona(persona_data, personas_in_directory_list, current_persona_number) 
 
@@ -309,7 +311,7 @@ def jackalbot_response (user_input, session_data):
                 x=2 # should throw an error on the first time that is caught by the except block
         except:
             bot_response = "System: When you are ready type 'start' in the text box below." 
-            return bot_response  # wait for user to type  'nvc start'
+            return bot_response, session_data['game_state_data']  # wait for user to type  'nvc start'
         if conversation_phase == 'intro'  :  #intro Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input, conversation_phase, persona_data )
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input, conversation_phase, persona_data, english_bot)

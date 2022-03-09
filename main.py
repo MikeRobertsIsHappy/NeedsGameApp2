@@ -10,7 +10,7 @@ import os.path
 
 app = Flask(__name__)
 app.secret_key = "hello"
-app.permanent_session_lifetime = timedelta(minutes=1)
+app.permanent_session_lifetime = timedelta(minutes=5)
 
 # first step is to get the users name.  This initiates the session
 @app.route("/", methods=["POST", "GET"])
