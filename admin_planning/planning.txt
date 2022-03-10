@@ -8,6 +8,7 @@ Features
 
     Figure out how to do Feeling game in the same app 
 
+wire up the nvc evaluation model line 78-85  the varribles are enot logged
 
 
 

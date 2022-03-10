@@ -48,5 +48,17 @@ def logout():
 	return redirect(url_for("login"))
 
 
+
 if __name__ == "__main__":
-	app.run(host='127.0.0.1', port=8080)  #, debug=True, threaded=True  
+    now = datetime.now().strftime("%Y_%m_%d_%H_%M")
+    app_directory = pathlib.Path().absolute()
+    app_directory = os.path.join(str(app_directory), "game_play_logs")
+    log_filename = '%s_log.txt' % now
+    log_file_path = os.path.join(app_directory, log_filename)
+
+    logging.basicConfig(
+        filename=log_file_path,
+        level=logging.INFO,
+        format='%(asctime)s.%(msecs)d %(levelname)-8s %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S')
+    app.run(host='127.0.0.1', port=8080)  #, debug=True, threaded=True   	

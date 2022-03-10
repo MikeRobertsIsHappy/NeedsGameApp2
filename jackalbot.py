@@ -1,4 +1,3 @@
-
 import logging
 from textblob import TextBlob
 import twily_classifier as cl
@@ -167,7 +166,7 @@ def make_response(cleaned_user_input, user_input,  conversation_phase, persona_d
 
         response_score = 0
 
-    return bot_host + "  "+bot_response, bot_status, response_score
+    return bot_host + "  "+ bot_response, bot_status, response_score
 
 def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary):
     cleaned_user_input = TextBlob(str(cleaned_user_input))
@@ -182,7 +181,7 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
     user_input_response_score={"input_response_score": response_score}
     
     #write user input scores
-    user_input_response_scores = str(user_input_did_it_sound_like_nvc)+", "+str(user_input_polarity)+", "+str(user_input_subjectivity)+", "+str(user_input_response_score)
+    user_input_response_scores = str(user_input_did_it_sound_like_nvc)+", "+str(user_input_polarity)+", "+str(user_input_subjectivity)+", "+str(user_input_response_score)+", "+str(user_input_response_score)
     logging.info(
         'user_input_response_scores: %s' % user_input_response_scores)
 
