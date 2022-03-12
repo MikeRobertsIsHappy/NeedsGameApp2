@@ -244,6 +244,7 @@ def jackalbot_response (user_input, session_data):
         personas_in_directory_list = []
         for entry in entries.iterdir():
             personas_in_directory_list.append(entry.name)  # put the nemes in a list
+        personas_in_directory_list.sort()    
         current_persona_number = 0    #set to 0 to start at begining of list
         starting_persona_file = personas_in_directory_list[current_persona_number]
         persona_data = load_startup_persona_file(starting_persona_file)

@@ -29,24 +29,24 @@ See 'admin_documents' folder for general information about the project. The Micr
 
 ## Optional Deploying to Google
 
-1. Use the [Google Developers Console](https://console.developer.google.com)  to create a project/app id. (App id and project id are identical)   
+Use the [Google Developers Console](https://console.developer.google.com)  to create a project/app id. (App id and project id are identical)   
 
-If delpoying to team location, the application might be disbaled to reduce billing costs.
-If the application has been diabled, you can enable the appilcation here https://console.cloud.google.com/appengine/settings?cloudshell=false&project=the-needs-game
-
-2.  Watch this https://www.youtube.com/watch?v=F7R8dEin6ZY
+ If new to this deployment process, you can watch this. 
+  Watch this https://www.youtube.com/watch?v=F7R8dEin6ZY
     Setup the gcloud tool, if you haven't already. Then use gcloud to deploy your app
-   ```
-   
+
 from the cloud terminal
+   If delpoying to team location, the application might be disbaled to reduce billing costs.
+   If the application has been diabled, you can enable the appilcation here https://console.cloud.google.com/appengine/settings?cloudshell=false&project=the-needs-game
+
    git clone https://github.com/MikeRobertsIsHappy/NeedsGameApp.git
    gcloud init   # (optional if you want to change settings)
    
-    cd <to the directroy>  #to the directory with the source code
+   cd NeedsGameApp   #to the directory with the source code
 
    gcloud app deploy  # to deploy, may take several minutes
 
-   cloud app logs tail -s default # (optional)  will stream the logs to the terminal. Useful for debugging
+       cloud app logs tail -s default    # (optional)  will stream the logs to the terminal. Useful for debugging
    ```
 3. Your application is now live 
    
