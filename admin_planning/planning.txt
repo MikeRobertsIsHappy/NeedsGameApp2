@@ -1,7 +1,9 @@
 
 Features
 
-        
+    add so that if a person gos to /game withough a session then it sends them to login
+
+
     I somehow delted the code  from Jackalbot to iniliaze the logs - need to finds that and put back
        Create an example log to keep in folder as an example showing sentiment
        limit log size /quality so we don't blow up the  system when we run out of hardirive space

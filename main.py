@@ -33,7 +33,7 @@ def game():
 		user = session["user"]
 		return render_template("index.html")
 	else:
-		return render_template("index.html")
+		return redirect("/")
 
 @app.route("/get")
 def get_bot_response():
