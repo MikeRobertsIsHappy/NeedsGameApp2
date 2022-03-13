@@ -51,22 +51,22 @@ def load_next_persona(persona_data, personas_in_directory_list,	current_persona_
     bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
     return bot_response, persona_data
 
-def look_for_keyword(user_input, persona_data):
+def look_for_keyword(user_input_keyword, persona_data):
     #check for NVC help
     response = ""
-    user_input = ' '.join(user_input)  # to convert from list to string
-    if user_input == 'nvc help' : response = "Type &#39;nvc needs&#39; to see the list." #
-    if user_input == 'nvc' : response = "Type &#39;nvc_needs&#39; to see the list." #
-    #if user_input == 'nvc feelings' : response =  persona_data["feelings_list"]
-    if user_input == 'nvc needs' : response =  persona_data["needs_list"] 
-    #if user_input == 'nvc end' : response =  "This feature is not ready yet"   # exit() 
-    if user_input == 'nvc clue' : response =  persona_data["needs_clue"] 
-    if user_input == 'nvc scores' : 
+    user_input_keyword = ' '.join(user_input)  # to convert from list to string
+    user_input_keyword= user_input_keyword.lower()
+    if user_input_keyword == 'nvc help' : response = "Type &#39;nvc needs&#39; to see the list." #
+    if user_input_keyword == 'nvc' : response = "Type &#39;nvc_needs&#39; to see the list." #
+    #if user_input_keyword == 'nvc feelings' : response =  persona_data["feelings_list"]
+    if user_input_keyword == 'nvc needs' : response =  persona_data["needs_list"] 
+    #if user_input_keyword == 'nvc end' : response =  "This feature is not ready yet"   # exit() 
+    if user_input_keyword == 'nvc clue' : response =  persona_data["needs_clue"] 
+    if user_input_keyword == 'nvc scores' : 
         persona_data["show_scores"] = not persona_data["show_scores"]
         response =  f'Show scores set to {persona_data["show_scores"]}'
-    if user_input == 'nvc next' : response =  "This feature is not ready yet" 
-    if user_input == 'nvc set' : response =  "This feature is not ready yet" 
-    if user_input == 'set hungry' : response =  "This feature is not ready yet" 
+    if user_input_keyword == 'nvc next' : response =  "This feature is not ready yet" 
+    if user_input_keyword == 'nvc set' : response =  "This feature is not ready yet" 
     return response
 
 def did_it_sound_like_nvc(u_input):
@@ -237,7 +237,7 @@ def jackalbot_response (user_input, session_data):
     global game_state_dictionary
     game_state_dictionary={} # initialize
 
-    if user_input in ["yy", "start", "Yy", "Start"]   :    #startmg a new game
+    if user_input.lower() in ["s", "start"]   :    #startmg a new game
         app_dir_path = pathlib.Path().absolute()  # get app path
         my_directory = os.path.join(str(app_dir_path), "personas")   # add persona to it
         entries = Path(my_directory) #get sorted list of file items
@@ -280,7 +280,7 @@ def jackalbot_response (user_input, session_data):
 
         return bot_response, session_data['game_state_data']
 
-    elif user_input in ["begin", "b", "B"]    :  #start the next session
+    elif user_input.lower() in ["begin", "b"]    :  #start the next session
         
         #load values from game_state_dictionary
         personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
