@@ -280,7 +280,7 @@ def jackalbot_response (user_input, session_data):
 
         return bot_response, session_data['game_state_data']
 
-    elif user_input in ["begin", "b"]    :  #start the next session
+    elif user_input in ["begin", "b", "B"]    :  #start the next session
         
         #load values from game_state_dictionary
         personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
