@@ -26,7 +26,7 @@ h3 {
 }
 
 #chatbox {
-    max-width: 750px;
+    width: 750px;
     margin-top: 30px;
     text-align: left;
 }
@@ -36,12 +36,12 @@ h3 {
     margin-right: auto;
     box-align: left;
     text-align: left;
-    max-width: 100%;
+    width: 100%;
     margin-top: 30px;
 }
 
 #textInput {
-    max-width: 90%;
+    width: 400px;
     box-align: left;
     text-align: left;
     border: none;
@@ -88,5 +88,5 @@ h3 {
     position:absolute;
     bottom:0;
     right:0;
-    max-width: 600px;
+    width: 600px;
 }
