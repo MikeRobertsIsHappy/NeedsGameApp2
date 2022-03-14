@@ -56,12 +56,12 @@ def look_for_keyword(user_input, persona_data):
     response = ""
     user_input_keyword = ' '.join(user_input)  # to convert from list to string
     user_input_keyword= user_input_keyword.lower()
-    if user_input_keyword == 'nvc help' : response = "Type &#39;nvc needs&#39; to see the list." #
+    if user_input_keyword in ['nvc help', 'help'] : response = "Type &#39;nvc needs&#39; to see the list." #
     if user_input_keyword == 'nvc' : response = "Type &#39;nvc_needs&#39; to see the list." #
     #if user_input_keyword == 'nvc feelings' : response =  persona_data["feelings_list"]
-    if user_input_keyword == 'nvc needs' : response =  persona_data["needs_list"] 
+    if user_input_keyword in [ 'nvc needs', 'needs'] : response =  persona_data["needs_list"] 
     #if user_input_keyword == 'nvc end' : response =  "This feature is not ready yet"   # exit() 
-    if user_input_keyword == 'nvc clue' : response =  persona_data["needs_clue"] 
+    if user_input_keyword in  ['nvc clue', 'clue'] : response =  persona_data["needs_clue"] 
     if user_input_keyword == 'nvc scores' : 
         persona_data["show_scores"] = not persona_data["show_scores"]
         response =  f'Show scores set to {persona_data["show_scores"]}'
@@ -280,7 +280,7 @@ def jackalbot_response (user_input, session_data):
 
         return bot_response, session_data['game_state_data']
 
-    elif user_input.strip().lower() in ["begin", "b"]    :  #start the next session
+    elif user_input.strip().lower() in ["next" "begin", "b"]    :  #start the next session
         
         #load values from game_state_dictionary
         personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
