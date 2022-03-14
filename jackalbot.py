@@ -237,7 +237,7 @@ def jackalbot_response (user_input, session_data):
     global game_state_dictionary
     game_state_dictionary={} # initialize
 
-    if user_input.lower() in ["s", "start"]   :    #startmg a new game
+    if user_input.strip().lower() in ["s", "start"]   :    #startmg a new game
         app_dir_path = pathlib.Path().absolute()  # get app path
         my_directory = os.path.join(str(app_dir_path), "personas")   # add persona to it
         entries = Path(my_directory) #get sorted list of file items
@@ -280,7 +280,7 @@ def jackalbot_response (user_input, session_data):
 
         return bot_response, session_data['game_state_data']
 
-    elif user_input.lower() in ["begin", "b"]    :  #start the next session
+    elif user_input.strip().lower() in ["begin", "b"]    :  #start the next session
         
         #load values from game_state_dictionary
         personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
