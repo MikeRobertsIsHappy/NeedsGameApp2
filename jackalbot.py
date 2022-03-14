@@ -51,7 +51,7 @@ def load_next_persona(persona_data, personas_in_directory_list,	current_persona_
     bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
     return bot_response, persona_data
 
-def look_for_keyword(user_input_keyword, persona_data):
+def look_for_keyword(user_input, persona_data):
     #check for NVC help
     response = ""
     user_input_keyword = ' '.join(user_input)  # to convert from list to string
