@@ -1,9 +1,11 @@
 
 Features
 
-improve font size
+what to change in personas
 
-add help  and next
+update clue
+update needs list
+
 
 
 limit log size /quality so we don't blow up the  system when we run out of hardirive space
