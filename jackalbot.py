@@ -28,7 +28,7 @@ def load_startup_persona_file(startup_file):
         persona_data = json.load(f) 
     return(persona_data)
 
-def load_next_persona(persona_data, personas_in_directory_list,	current_persona_number):
+def load_next_persona(persona_data, personas_in_directory_list,	current_persona_number,total_score_dictionary):
     starting_persona_file = personas_in_directory_list[current_persona_number]
     persona_data = load_startup_persona_file(starting_persona_file)
     bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
@@ -47,9 +47,12 @@ def load_next_persona(persona_data, personas_in_directory_list,	current_persona_
     total_score_dictionary["cleaned_input_polarity"]            = 0.00
     total_score_dictionary["cleaned_input_subjectivity"]        = 0.00
     total_score_dictionary["cleaned_input_response_score"]      = 0.00
+    total_score_dictionary["score_for_this_section"]            = 0
+    total_score_dictionary["previous_correct_answers"]          = ["xxx"]
+    total_score_dictionary["number_of_guesses"]                 = 0
     persona_data["show_scores"] = False
     bot_response = f"------------------------------------- <br><br>"  + persona_data["intro_prompt"] 
-    return bot_response, persona_data
+    return bot_response, persona_data, total_score_dictionary
 
 def look_for_keyword(user_input, persona_data):
     #check for NVC help
@@ -148,7 +151,7 @@ def make_response(cleaned_user_input, user_input,  conversation_phase, persona_d
         bot_response = in_main_corpus
         bot_status = "found in main corpus"
 
-    if in_main_corpus == "," :  #not in main corpus, 
+    elif in_main_corpus == "," :  #not in main corpus, 
         user_resposne_string =  user_input  # set to orginal   OR  ' '.join(cleaned_user_input)  # make a string
         #  #set conversation data to correct one
         if conversation_phase=="intro"    : general_bot_support_prompts = persona_data["intro_general_bot_support_prompts"]
@@ -210,13 +213,14 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
 
     return cleaned_user_input_response_scores, total_score_dictionary  #this only sends the cleaned vers
 
-def create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary) :
+def create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary,total_score_dictionary) :
     game_state_dictionary['personas_in_directory_list'] = personas_in_directory_list
     game_state_dictionary['current_persona_number'] = current_persona_number
     game_state_dictionary['conversation_phase'] = conversation_phase
     game_state_dictionary['past_show_scores'] = past_show_scores
     game_state_dictionary['bot_host'] = bot_host
     game_state_dictionary['persona_data'] = persona_data
+    game_state_dictionary['total_score_dictionary'] = total_score_dictionary
     return game_state_dictionary
     
 def read_game_state_dictionary_into_varribles (game_state_dictionary):
@@ -226,7 +230,8 @@ def read_game_state_dictionary_into_varribles (game_state_dictionary):
     past_show_scores =game_state_dictionary['past_show_scores']
     bot_host = game_state_dictionary['bot_host']
     persona_data   = game_state_dictionary['persona_data']    
-    return personas_in_directory_list,	current_persona_number, conversation_phase, past_show_scores, bot_host, persona_data 
+    total_score_dictionary = game_state_dictionary['total_score_dictionary']
+    return personas_in_directory_list,	current_persona_number, conversation_phase, past_show_scores, bot_host, persona_data, total_score_dictionary 
 
 
 
@@ -267,6 +272,9 @@ def jackalbot_response (user_input, session_data):
         total_score_dictionary["cleaned_input_polarity"]            = 0.00
         total_score_dictionary["cleaned_input_subjectivity"]        = 0.00
         total_score_dictionary["cleaned_input_response_score"]      = 0.00
+        total_score_dictionary["score_for_this_section"]            = 0.00
+        total_score_dictionary["previous_correct_answers"]          = ["xxx"]
+        total_score_dictionary["number_of_guesses"]                 = 0
 
         persona_data["show_scores"] = False
         bot_response = f"---------STARTING  NEW SESSION ------------------- <br><br>"  + persona_data["intro_prompt"] 
@@ -276,14 +284,14 @@ def jackalbot_response (user_input, session_data):
         #string_temp_game_state_dictionary =  json.dumps(temp_game_state_dictionary)  
         #session_data['game_state_data'] = string_temp_game_state_dictionary
  
-        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
+        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary, total_score_dictionary)
 
         return bot_response, session_data['game_state_data']
 
     elif user_input.strip().lower() in ["next", "begin", "b"]    :  #start the next session
         
         #load values from game_state_dictionary
-        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
+        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, total_score_dictionary = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
 
         try :
             current_persona_number = current_persona_number + 1    #set to 1 to start at begining of list
@@ -295,17 +303,16 @@ def jackalbot_response (user_input, session_data):
             bot_response = f"------------------------------------- <br>"  +"This is the end of the session.  Enter &#39;start&#39; to play again."
             return bot_response, session_data['game_state_data']
         else :
-            bot_response, persona_data = load_next_persona(persona_data, personas_in_directory_list, current_persona_number) 
+            bot_response, persona_data, total_score_dictionary = load_next_persona(persona_data, personas_in_directory_list, current_persona_number,total_score_dictionary) 
 
             #save game state
-        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
+        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary, total_score_dictionary)
 
         return bot_response, session_data['game_state_data']
 
     else : #if a normal statement
         #load values from game_state_dictionary
-        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
-        total_score_dictionary = {}
+        personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, total_score_dictionary = read_game_state_dictionary_into_varribles (session_data['game_state_data'])
         try:
             if conversation_phase == 'test'  :  #intro Phase
                 x=2 # should throw an error on the first time that is caught by the except block
@@ -324,12 +331,26 @@ def jackalbot_response (user_input, session_data):
             scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary )
             if response_score == 100: 
                 conversation_phase = 'needs'  # Level achieved, move to next stage
+
+        # +++++ CORE OF NEEDS GAME ++++++++++++++++++++++++++++++++++++++        
         elif conversation_phase == 'needs' :  #Needs Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input,  conversation_phase, persona_data)
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input, conversation_phase, persona_data, english_bot)
             scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary )
-            if response_score == 100: 
+
+            total_score_dictionary["score_for_this_section"] = total_score_dictionary["score_for_this_section"] + int(response_score)  # keep track of totlal score
+            total_score_dictionary["previous_correct_answers"].append(cleaned_user_input)  #track for correct answers
+
+            # if total_score_dictionary["number_of_guesses"] >= 
+            
+    
+            #see if the trainee has a winning score
+            if total_score_dictionary["score_for_this_section"]  >= persona_data['jackalbot_score_to_move_to_next_stage']: 
                 conversation_phase = 'needs'    #strategy'  # stay in loop for needs in this case
+                bot_response = bot_response + persona_data['needs_if_successul_guess_prompt'] # Add success prompt to the bot repsonse
+
+        # +++++ CORE OF NEEDS GAME ++++++++++++++++++++++++++++++++++++++       
+        #         
         elif conversation_phase == 'strategy' :  #Strategy Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input,  conversation_phase, persona_data )
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input,  conversation_phase, persona_data, english_bot)
@@ -348,6 +369,6 @@ def jackalbot_response (user_input, session_data):
             bot_response = bot_response 
 
         #save game state
-        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary)
+        session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary, total_score_dictionary)
 
         return bot_response, session_data['game_state_data']
