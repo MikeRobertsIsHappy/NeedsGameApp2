@@ -20,6 +20,15 @@ def login():
 		user = request.form["nm"]
 		session["user"] = user
 		session['game_state_data'] = 'starting new session'
+
+		# define log name and save to session cookie
+		now = datetime.now().strftime("%Y_%m_%d_%H_%M")
+		app_directory = pathlib.Path().absolute()
+		app_directory = os.path.join(str(app_directory), "game_play_logs")
+		log_filename = '%s_play.txt' % now
+		play_log_file_path = os.path.join(app_directory, log_filename)
+		session['play_log_file_path'] = play_log_file_path
+		
 		return redirect(url_for("game"))
 	else:
 		if "user" in session:

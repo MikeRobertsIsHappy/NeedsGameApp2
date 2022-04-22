@@ -28,13 +28,13 @@ def load_startup_persona_file(startup_file):
         persona_data = json.load(f) 
     return(persona_data)
 
-def load_next_persona(persona_data, personas_in_directory_list,	current_persona_number,total_score_dictionary):
+def load_next_persona(persona_data, personas_in_directory_list,	current_persona_number,total_score_dictionary, session_data):
     starting_persona_file = personas_in_directory_list[current_persona_number]
     persona_data = load_startup_persona_file(starting_persona_file)
-    bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
-    logging.info('introduction:Start of session')
+    bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list  
+    save_score_to_file('introduction:Start of session', session_data['play_log_file_path'])
     startup_info = {k: persona_data[k] for k in ('jackalbot_name', 'jackalbot_created',  'jackalbot_updated', 'jackalbot_version', 'jackalbot_author', 'jackalbot_hosts', 'intro_prompt', 'jackalbot_score_to_move_to_next_stage', 'jackalbot_num_guess_then_offer_clue', 'jackalbot_num_guess_max_then_move_on')}
-    logging.info('session info:%s' % startup_info)
+    save_score_to_file('session info:%s' % startup_info, session_data['play_log_file_path'])
     # Set global varribles
     conversation_phase  = 'needs'
     past_show_scores = False
@@ -171,10 +171,9 @@ def make_response(cleaned_user_input, user_input,  conversation_phase, persona_d
 
     return bot_host + "  "+ bot_response, bot_status, response_score
 
-def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary):
+def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary, session_data):
     cleaned_user_input = TextBlob(str(cleaned_user_input))
     user_input = TextBlob(str(user_input))
-    logging.info('user_input: %s' % str(user_input))
 
     #set varribles
     user_input_did_it_sound_like_nvc={"did_it_sound_like_nvc": did_it_sound_like_nvc (user_input)}
@@ -185,8 +184,9 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
     
     #write user input scores
     user_input_response_scores = str(user_input_did_it_sound_like_nvc)+", "+str(user_input_polarity)+", "+str(user_input_subjectivity)+", "+str(user_input_response_score)+", "+str(user_input_response_score)
-    logging.info(
-        'user_input_response_scores: %s' % user_input_response_scores)
+    #logging.info('user_input_response_scores: %s' % user_input_response_scores)
+    save_score_to_file('user_input : ' + str(user_input), session_data['play_log_file_path'])
+    save_score_to_file(user_input_response_scores, session_data['play_log_file_path'])
 
     #total_score_dictionary["did_it_sound_like_nvc_pos"] = total_score_dictionary["did_it_sound_like_nvc_pos"] + sound_like_nvc_pos
     #total_score_dictionary["input_polarity"]        = total_score_dictionary["cleaned_input_polarity"]         + user_input.polarity
@@ -202,9 +202,10 @@ def do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_
     cleaned_user_input_response_score={"input_response_score", response_score}
 
     cleaned_user_input_response_scores = str(cleaned_user_input_did_it_sound_like_nvc)+", "+str(cleaned_user_input_polarity)+", "+str(cleaned_user_input_subjectivity)+", "+str(cleaned_user_input_response_score)
-    logging.info('cleaned_user_input: %s' % str(cleaned_user_input))
-    logging.info(
-        'cleaned_user_input_response_scores: %s' % cleaned_user_input_response_scores)
+    #logging.info('cleaned_user_input: %s' % str(cleaned_user_input))
+    #logging.info('cleaned_user_input_response_scores: %s' % cleaned_user_input_response_scores)
+    save_score_to_file('cleaned_user_input : ' + str(cleaned_user_input), session_data['play_log_file_path'])
+    save_score_to_file(cleaned_user_input_response_scores, session_data['play_log_file_path'])
 
     #total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] = total_score_dictionary["cleaned_did_it_sound_like_nvc_pos"] + cleaned_sound_like_nvc_pos
     #total_score_dictionary["cleaned_input_polarity"]        = total_score_dictionary["cleaned_input_polarity"]         + cleaned_user_input.polarity
@@ -233,7 +234,12 @@ def read_game_state_dictionary_into_varribles (game_state_dictionary):
     total_score_dictionary = game_state_dictionary['total_score_dictionary']
     return personas_in_directory_list,	current_persona_number, conversation_phase, past_show_scores, bot_host, persona_data, total_score_dictionary 
 
-
+def save_score_to_file(data_to_save, path_to_log):
+    with open(path_to_log, 'a+') as file:   #  session['play_log_file_path'] = play_log_file_path
+        file.write(data_to_save)
+        file.write("\n")
+    file.close()    
+    return
 
 
 def jackalbot_response (user_input, session_data):
@@ -253,13 +259,14 @@ def jackalbot_response (user_input, session_data):
         current_persona_number = 0    #set to 0 to start at begining of list
         starting_persona_file = personas_in_directory_list[current_persona_number]
         persona_data = load_startup_persona_file(starting_persona_file)
+        bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list 
 
-        bot_host = random.choice(persona_data["jackalbot_hosts"])   #set host from random list      
-        logging.info('introduction:Start of session')
+        save_score_to_file('introduction:Start of session', session_data['play_log_file_path'])
         startup_info = {k: persona_data[k] for k in ('jackalbot_name', 'jackalbot_created',  'jackalbot_updated', 'jackalbot_version', 'jackalbot_author', 'jackalbot_hosts', 'intro_prompt', 'jackalbot_score_to_move_to_next_stage', 'jackalbot_num_guess_then_offer_clue', 'jackalbot_num_guess_max_then_move_on')}
-        logging.info('session info:%s' % startup_info) # send initiazation data to log
+        save_score_to_file('session info:%s' % startup_info, session_data['play_log_file_path'])
         user_info = session_data['user']   
-        logging.info('user info:%s' % user_info)  #send user's name to log
+        save_score_to_file('user info:%s' % user_info, session_data['play_log_file_path'])
+
         # Set global varribles
         conversation_phase  = 'needs'
         past_show_scores = False
@@ -303,7 +310,7 @@ def jackalbot_response (user_input, session_data):
             bot_response = f"------------------------------------- <br>"  +"This is the end of the session.  Enter &#39;start&#39; to play again."
             return bot_response, session_data['game_state_data']
         else :
-            bot_response, persona_data, total_score_dictionary = load_next_persona(persona_data, personas_in_directory_list, current_persona_number,total_score_dictionary) 
+            bot_response, persona_data, total_score_dictionary = load_next_persona(persona_data, personas_in_directory_list, current_persona_number,total_score_dictionary, session_data) 
 
             #save game state
         session_data['game_state_data'] = create_game_state_dictionary (personas_in_directory_list, current_persona_number, conversation_phase, past_show_scores, bot_host,  persona_data, game_state_dictionary, total_score_dictionary)
@@ -322,13 +329,13 @@ def jackalbot_response (user_input, session_data):
         if conversation_phase == 'intro'  :  #intro Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input, conversation_phase, persona_data )
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input, conversation_phase, persona_data, english_bot)
-            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary )
+            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary,session_data )
             if response_score == 100: 
                 conversation_phase = 'feelings'   # Level achieved, move to next stage
         elif conversation_phase== 'feelings'  :  #Feeling Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input,  conversation_phase, persona_data )
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input, conversation_phase, persona_data, english_bot)
-            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary )
+            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary,session_data )
             if response_score == 100: 
                 conversation_phase = 'needs'  # Level achieved, move to next stage
 
@@ -336,7 +343,7 @@ def jackalbot_response (user_input, session_data):
         elif conversation_phase == 'needs' :  #Needs Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input,  conversation_phase, persona_data)
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input, conversation_phase, persona_data, english_bot)
-            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary )
+            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary,session_data )
 
             total_score_dictionary["score_for_this_section"] = total_score_dictionary["score_for_this_section"] + int(response_score)  # keep track of totlal score
             total_score_dictionary["previous_correct_answers"].append(cleaned_user_input)  #track for correct answers
@@ -354,7 +361,7 @@ def jackalbot_response (user_input, session_data):
         elif conversation_phase == 'strategy' :  #Strategy Phase
             cleaned_user_input = get_response_from_user_and_clean(user_input,  conversation_phase, persona_data )
             bot_response, bot_status, response_score =  make_response(cleaned_user_input, user_input,  conversation_phase, persona_data, english_bot)
-            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary )
+            scoring_response, total_score_dictionary = do_scoring_and_logging(user_input, cleaned_user_input, bot_status, response_score, total_score_dictionary, session_data )
             if response_score == 100: 
                 conversation_phase = 'end'  # Level achieved, move to next stage
         
